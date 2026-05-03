@@ -8,9 +8,17 @@ export interface ConfigOptions extends CommandOptions {
   rules?: string[]
 }
 
-export interface Options extends Required<CommandOptions>, Required<Pick<ConfigOptions, 'rules'>> {
+export type UserConfig = Partial<ConfigOptions>
+
+export type UserConfigArray = UserConfig[]
+
+export type UserConfigExport = UserConfig | UserConfigArray
+
+export interface ResolvedOptions extends Required<CommandOptions>, Required<Pick<ConfigOptions, 'rules'>> {
 
 }
+
+export type Options = ResolvedOptions[]
 
 export interface MergeResult {
   source: string

@@ -18,9 +18,17 @@ try {
     .option('-o, --output <path>', 'Output merged YAML path')
     .action(async (options: Partial<CommandOptions>) => {
       p.intro(`${c.yellow`${NAME} `}${c.dim`v${VERSION}`}`)
-      const config = await resolveConfig(options)
-      const result = await mergeClashConfigFile(config)
-      p.outro(`Merged ${result.insertedRules.length} rule(s) to ${result.output}`)
+      const configs = await resolveConfig(options)
+      const results = await Promise.all(configs.map(config => mergeClashConfigFile(config)))
+
+      if (results.length === 1) {
+        const [result] = results
+        p.outro(`Merged ${c.yellow(result.insertedRules.length)} rule(s) to ${result.output}`)
+      }
+      else {
+        const mergedFiles = results.map(result => c.dim(result.output)).join('\n')
+        p.outro(`Merged ${c.yellow(results.length)} config(s):\n${mergedFiles}`)
+      }
     })
 
   cli.help()

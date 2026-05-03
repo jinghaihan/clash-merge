@@ -1,4 +1,4 @@
-import type { MergeResult, Options } from './types'
+import type { MergeResult, ResolvedOptions } from './types'
 import { mkdir, readFile, rename, writeFile } from 'node:fs/promises'
 import { basename, dirname, isAbsolute, resolve } from 'node:path'
 import process from 'node:process'
@@ -8,7 +8,7 @@ type ClashConfig = Record<string, unknown> & {
   rules?: unknown
 }
 
-export async function mergeClashConfigFile(options: Options): Promise<MergeResult> {
+export async function mergeClashConfigFile(options: ResolvedOptions): Promise<MergeResult> {
   const cwd = resolve(options.cwd || process.cwd())
   const source = resolvePath(cwd, options.source, 'Missing source path. Pass --source or set source in clash-merge.config.ts.')
   const output = resolvePath(cwd, options.output, 'Missing output path. Pass --output or set output in clash-merge.config.ts.')

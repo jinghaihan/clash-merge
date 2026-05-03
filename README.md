@@ -32,6 +32,8 @@ export default defineConfig({
 })
 ```
 
+For multiple Clash subscriptions, pass an array to `defineConfig`.
+
 Then point Clash at the generated `subscription.merged.yaml` file.
 
 ## License

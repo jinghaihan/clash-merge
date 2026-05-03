@@ -1,18 +1,22 @@
-import type { CommandOptions, ConfigOptions, Options } from './types'
+import type { CommandOptions, Options, ResolvedOptions, UserConfigExport } from './types'
 import process from 'node:process'
 import { createConfigLoader } from 'unconfig'
 import { DEFAULT_OPTIONS } from './constants'
 
-function normalizeConfig(options: Partial<Options>) {
+interface DefaultExportedConfig {
+  default?: UserConfigExport
+}
+
+function normalizeConfig(options: UserConfigExport | DefaultExportedConfig) {
   // interop
-  if ('default' in options)
-    options = options.default as Partial<Options>
+  if (isRecord(options) && 'default' in options)
+    return options.default || {}
 
   return options
 }
 
 export async function readConfig(options: Partial<CommandOptions>) {
-  const loader = createConfigLoader<ConfigOptions>({
+  const loader = createConfigLoader<UserConfigExport>({
     sources: [
       {
         files: ['clash-merge.config'],
@@ -28,10 +32,20 @@ export async function readConfig(options: Partial<CommandOptions>) {
 
 export async function resolveConfig(options: Partial<CommandOptions>): Promise<Options> {
   const defaults = { ...DEFAULT_OPTIONS }
-  options = normalizeConfig(options)
 
   const configOptions = await readConfig(options)
-  const merged = { ...defaults, ...configOptions, ...options }
 
-  return merged as Options
+  return toArray(configOptions).map(config => ({
+    ...defaults,
+    ...config,
+    ...options,
+  }) as ResolvedOptions)
+}
+
+function toArray<T>(value: T | T[]) {
+  return Array.isArray(value) ? value : [value]
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return !!value && typeof value === 'object' && !Array.isArray(value)
 }
