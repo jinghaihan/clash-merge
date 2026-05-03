@@ -1,7 +1,7 @@
 {
   "name": "clash-merge",
   "type": "module",
-  "version": "0.0.0-alpha.0",
+  "version": "0.1.0",
   "packageManager": "pnpm@10.33.0",
   "description": "Tool to merge custom rules with Clash config updates.",
   "author": "jinghaihan",
